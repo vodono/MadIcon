@@ -12,7 +12,7 @@ $(document).ready(function() {
             return false;
         }
     });
-    $(document).on("click", console.log('click')
+    $(document).on("click", console.log('click'))
 //    $("#position_h").select();
 //    $("#position_v").select();
     updater.start();
