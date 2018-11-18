@@ -5,8 +5,18 @@ $(document).ready(function() {
     $("#position_form").on("keypress", function(e) {
         if (e.keyCode == 13) {
             var form = $(this);
-            newPosition(form.formToDict());
-            form.find("input[type=text]").val("").select();
+            var form_dict = form.formToDict();
+            console.log("coordinates valid:", form_dict.position_h);
+            if (
+                form_dict.position_h > 0 && form_dict.position_h <= 100 &&
+                form_dict.position_v > 0 && form_dict.position_v <= 100
+            ) {
+                newPosition(form_dict);
+                form.find("input[type=text]").val("").select();
+            } else {
+                alert("Incorrect coordinates")
+            }
+
             return false;
         }
     });
@@ -39,7 +49,7 @@ var updater = {
     socket: null,
 
     start: function() {
-        var url = "wss://" + location.host + "/iconsocket";
+        var url = "ws://" + location.host + "/iconsocket";
         updater.socket = new WebSocket(url);
         updater.socket.onmessage = function(event) {
 
@@ -62,6 +72,3 @@ var updater = {
 //        node.slideDown();
     }
 };
-
-//$(window).height();
-//$(window).width();
