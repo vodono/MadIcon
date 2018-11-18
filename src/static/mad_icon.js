@@ -2,23 +2,24 @@ $(document).ready(function() {
     if (!window.console) window.console = {};
     if (!window.console.log) window.console.log = function() {};
 
-//    $("#messageform").on("submit", function() {
-//        newMessage($(this));
-//        return false;
-//    });
     $("#position_form").on("keypress", function(e) {
         if (e.keyCode == 13) {
             newPosition($(this));
             return false;
         }
     });
-    $(document).on("click", console.log('click'))
-//    $("#position_h").select();
-//    $("#position_v").select();
+
+    $(document).click(function(e) {
+        console.log("click object:", e.pageX, e.pageY, $(window).height(), $(window).width())
+//        newPosition($(this))
+        return false
+    });
+
     updater.start();
 });
 
 function newPosition(form) {
+//    console.log(form)
     var position = form.formToDict();
     updater.socket.send(JSON.stringify(position));
     form.find("input[type=text]").val("").select();
@@ -38,7 +39,7 @@ var updater = {
     socket: null,
 
     start: function() {
-        var url = "wss://" + location.host + "/iconsocket";
+        var url = "ws://" + location.host + "/iconsocket";
         updater.socket = new WebSocket(url);
         updater.socket.onmessage = function(event) {
 

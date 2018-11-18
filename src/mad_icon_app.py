@@ -66,6 +66,8 @@ class IconSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         # logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
+        # import ipdb
+        # ipdb.set_trace()
         IconSocketHandler.position_v = parsed['position_v']
         IconSocketHandler.position_h = parsed['position_h']
         forward_message = {
