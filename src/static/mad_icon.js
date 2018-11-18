@@ -4,25 +4,25 @@ $(document).ready(function() {
 
     $("#position_form").on("keypress", function(e) {
         if (e.keyCode == 13) {
-            newPosition($(this));
+            var form = $(this);
+            newPosition(form.formToDict());
+            form.find("input[type=text]").val("").select();
             return false;
         }
     });
 
     $(document).click(function(e) {
-        console.log("click object:", e.pageX, e.pageY, $(window).height(), $(window).width())
-//        newPosition($(this))
-        return false
+        position_h = e.pageX * 100 / $(window).width();
+        position_v = e.pageY * 100 / $(window).height();
+        newPosition({"position_v":position_v, "position_h":position_h});
+        return false;
     });
 
     updater.start();
 });
 
-function newPosition(form) {
-//    console.log(form)
-    var position = form.formToDict();
-    updater.socket.send(JSON.stringify(position));
-    form.find("input[type=text]").val("").select();
+function newPosition(position_dict) {
+    updater.socket.send(JSON.stringify(position_dict));
 }
 
 jQuery.fn.formToDict = function() {
