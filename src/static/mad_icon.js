@@ -49,7 +49,7 @@ var updater = {
     socket: null,
 
     start: function() {
-        var url = "ws://" + location.host + "/iconsocket";
+        var url = "wss://" + location.host + "/iconsocket";
         updater.socket = new WebSocket(url);
         updater.socket.onmessage = function(event) {
 
