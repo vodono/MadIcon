@@ -6,7 +6,8 @@ $(document).ready(function() {
         if (e.keyCode == 13) {
             var form = $(this);
             var form_dict = form.formToDict();
-
+            // validate if coordinates are between 0 and 100 (can be transferred
+            // to percentage)
             if (
                 form_dict.position_h >= 0 && form_dict.position_h <= 100 &&
                 form_dict.position_v >= 0 && form_dict.position_v <= 100
@@ -31,6 +32,8 @@ $(document).ready(function() {
     updater.start();
 });
 
+// Verify if new coordinates don't lead to icon out of window and send them
+// as JSON to server
 function newPosition(position_dict) {
     max_w = ($(window).width() - $("#icon_id").width()) * 100 / $(window).width();
     max_h = ($(window).height() - $("#icon_id").height()) * 100 / $(window).height();
@@ -46,6 +49,7 @@ function newPosition(position_dict) {
     updater.socket.send(JSON.stringify(position_dict));
 }
 
+// transfer http form's data to dict
 jQuery.fn.formToDict = function() {
     var fields = this.serializeArray();
     var json = {}
@@ -60,12 +64,9 @@ var updater = {
     socket: null,
 
     start: function() {
-        var url = "ws://" + location.host + "/iconsocket";
+        var url = "wss://" + location.host + "/iconsocket";
         updater.socket = new WebSocket(url);
         updater.socket.onmessage = function(event) {
-
-            console.log('message received', event.data, JSON.parse(event.data))
-
             updater.showIcon(JSON.parse(event.data));
         }
     },

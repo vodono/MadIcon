@@ -12,6 +12,10 @@ define("port", default=8888, help="run on the given port", type=int)
 
 
 class Application(tornado.web.Application):
+    """
+    Create Tornado application with main index page and websocket handler
+    for update of icon position.
+    """
     def __init__(self):
         handlers = [(r"/", MainHandler), (r"/iconsocket", IconSocketHandler)]
         settings = dict(
@@ -24,6 +28,9 @@ class Application(tornado.web.Application):
 
 
 class MainHandler(tornado.web.RequestHandler):
+    """
+    Obtain icon size and render index page with actual coordinates and icon size.
+    """
     def get(self):
         with Image.open(os.path.dirname(__file__)+'/static/tdo.png', 'r') as image:
             self.width, self.height = image.size
@@ -57,6 +64,10 @@ class IconSocketHandler(tornado.websocket.WebSocketHandler):
                 print("Error sending message")
 
     def on_message(self, message):
+        """
+        On receiving of message with new coordinates save them and send to all
+        waiters.
+        """
         parsed = tornado.escape.json_decode(message)
         IconSocketHandler.position_v = parsed['position_v']
         IconSocketHandler.position_h = parsed['position_h']
