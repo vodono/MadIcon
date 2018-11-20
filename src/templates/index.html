@@ -11,8 +11,10 @@
            class="icon"
            src="{{ static_url('tdo.png') }}"
            border="0"
-           style="--position_h:{{ str(position_h)+'%' }};
-                  --position_v:{{ str(position_v)+'%' }};">
+           style="left:{{ str(position_h)+'%' }};
+                  top:{{ str(position_v)+'%' }};
+                  width:{{ str(width) }};
+                  height:{{ str(height) }};">
     </div>
     <div id="input">
       <form id="position_form" action="/a/message/new" method="post">

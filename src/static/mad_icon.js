@@ -6,10 +6,10 @@ $(document).ready(function() {
         if (e.keyCode == 13) {
             var form = $(this);
             var form_dict = form.formToDict();
-            console.log("coordinates valid:", form_dict.position_h);
+
             if (
-                form_dict.position_h > 0 && form_dict.position_h <= 100 &&
-                form_dict.position_v > 0 && form_dict.position_v <= 100
+                form_dict.position_h >= 0 && form_dict.position_h <= 100 &&
+                form_dict.position_v >= 0 && form_dict.position_v <= 100
             ) {
                 newPosition(form_dict);
                 form.find("input[type=text]").val("").select();
@@ -32,6 +32,17 @@ $(document).ready(function() {
 });
 
 function newPosition(position_dict) {
+    max_w = ($(window).width() - $("#icon_id").width()) * 100 / $(window).width();
+    max_h = ($(window).height() - $("#icon_id").height()) * 100 / $(window).height();
+
+    if (position_dict["position_v"] > max_h) {
+        position_dict["position_v"] = max_h;
+    }
+
+    if (position_dict["position_h"] > max_w) {
+        position_dict["position_h"] = max_w;
+    }
+
     updater.socket.send(JSON.stringify(position_dict));
 }
 
@@ -49,7 +60,7 @@ var updater = {
     socket: null,
 
     start: function() {
-        var url = "wss://" + location.host + "/iconsocket";
+        var url = "ws://" + location.host + "/iconsocket";
         updater.socket = new WebSocket(url);
         updater.socket.onmessage = function(event) {
 
@@ -60,15 +71,8 @@ var updater = {
     },
 
     showIcon: function(position) {
-        position_style = "--position_h: " + position.position_h + "%; --position_v: " + position.position_v +"%;";
-        $("#icon_id").attr("style", position_style);
+        $("#icon_id").css("left", position.position_h + "%")
+        $("#icon_id").css("top", position.position_v + "%")
         $("#icon_id").slideDown();
-
-//        var existing = $("#m" + position.id);
-//        if (existing.length > 0) return;
-//        var node = $(position.html);
-//        node.hide();
-//        $("#inbox").append(node);
-//        node.slideDown();
     }
 };

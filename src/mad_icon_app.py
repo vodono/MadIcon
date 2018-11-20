@@ -1,13 +1,12 @@
-# import logging
-# import tornado.escape
 import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
 import os.path
-# import uuid
+from PIL import Image
 
 from tornado.options import define, options
+
 
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -26,10 +25,15 @@ class Application(tornado.web.Application):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
+        with Image.open(os.path.dirname(__file__)+'/static/tdo.png', 'r') as image:
+            self.width, self.height = image.size
+
         self.render(
             "index.html",
             position_h=IconSocketHandler.position_h,
-            position_v=IconSocketHandler.position_v
+            position_v=IconSocketHandler.position_v,
+            width=self.width,
+            height=self.height,
         )
 
 
@@ -38,36 +42,22 @@ class IconSocketHandler(tornado.websocket.WebSocketHandler):
     position_h = 0
     position_v = 0
 
-    # def get_compression_options(self):
-    #     # Non-None enables compression with default options.
-    #     return {}
-
     def open(self):
         IconSocketHandler.waiters.add(self)
 
     def on_close(self):
         IconSocketHandler.waiters.remove(self)
 
-    # @classmethod
-    # def update_cache(cls, chat):
-    #     cls.cache.append(chat)
-    #     if len(cls.cache) > cls.cache_size:
-    #         cls.cache = cls.cache[-cls.cache_size :]
-
     @classmethod
     def send_updates(cls, forward_message):
-        # logging.info("sending message to %d waiters", len(cls.waiters))
         for waiter in cls.waiters:
             try:
                 waiter.write_message(forward_message)
             except:
-                print("Error sending message")# logging.error("Error sending message", exc_info=True)
+                print("Error sending message")
 
     def on_message(self, message):
-        # logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
-        # import ipdb
-        # ipdb.set_trace()
         IconSocketHandler.position_v = parsed['position_v']
         IconSocketHandler.position_h = parsed['position_h']
         forward_message = {
