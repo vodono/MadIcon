@@ -72,8 +72,9 @@ var updater = {
     },
 
     showIcon: function(position) {
-        $("#icon_id").css("left", position.position_h + "%")
-        $("#icon_id").css("top", position.position_v + "%")
-        $("#icon_id").slideDown();
+        $("#icon_id").animate({
+            left: position.position_h + "%",
+            top: position.position_v + "%"
+        }, 400)
     }
 };
